@@ -66,27 +66,17 @@
         }
         function randCard() {
             max = 10
-            if (max > 78) {
-                max = 78
-            } else if (max < 1) {
-                max = 1
-            }
             output.innerHTML = ''
             for (c = 0; c < Math.ceil(max / 5); c++) {
-                let temp = 5
-                if (c == Math.ceil(max / 5) - 1 && max % 5 != 0) {
-                    temp = max % 5
-                }
-                for (i = 0; i < temp; i++) {
+                for (i = 0; i < 5; i++) {
                     direction = Math.floor(Math.random() * 2)
                     num = Math.floor(Math.random() * cards.length)
                     card = cards[num]
                     cards.splice(num, 1)
                     tempTotal = document.createElement("div")
                     tempTotal.className = "flex2 base"
-                    newAnim(100 / temp * i + (100 / screen.width * 100) + '%', c * 450 + 50 + 'px', c * 5 + i + 1)
-                    console.log(100 / temp * i + (100 / screen.width * 100) + '%')
-                    tempTotal.style.animationName = "animate" + (c * 5 + i + 1)
+                    newAnim(100 / 5 * i + (100 / screen.width * 100) + '%', c * 450 + 50 + 'px', c * 5 + i)
+                    tempTotal.style.animationName = "animate" + (c * 5 + i)
                     tempTotal.style.animationDuration = "1s"
                     tempTotal.style.animationFillMode = "both"
                     tempTotal.style.animationTimingFunction = "ease-out"
