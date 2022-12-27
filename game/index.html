@@ -83,22 +83,50 @@
                     num = Math.floor(Math.random() * cards.length)
                     card = cards[num]
                     cards.splice(num, 1)
+                    tempTotal = document.createElement("div")
+                    tempTotal.className = "flex2 base"
                     if (screen.width <= 1000) {
                         newAnim((200 * i) + 'px', c * 450 + 50 + 'px', c * 5 + i)
                     } else {
                         newAnim((screen.width / 5 * i + 100) + 'px', c * 450 + 50 + 'px', c * 5 + i)
                     }
+                    console.log()
+                    tempTotal.style.animationName = "animate" + (c * 5 + i)
+                    tempTotal.style.animationDuration = "1s"
+                    tempTotal.style.animationFillMode = "both"
+                    tempTotal.style.animationTimingFunction = "ease-out"
+                    tempTotal.style.animationDelay = ((c * 5 + i) * 0.5) + 's'
+                    tempTotal.style.margin = "0px"
+                    tempText = document.createElement("strong")
+                    tempText.className = "base"
+                    tempText.innerHTML = arr[c * 5 + i] + "<br>"
+                    tempText.style.fontSize = "25px"
+                    tempTotal.appendChild(tempText);
+                    tempText = document.createElement("strong")
+                    tempText.className = "base"
+                    tempText.innerHTML = card.Name
+                    tempTotal.appendChild(tempText);
                     className = '"base'
                     if (direction == 1) {
                         className += ' reversed'
                     }
+                    tempA = document.createElement("a")
+                    tempA.href = card.Link
+                    tempA.target = "_blank"
+                    tempImg = '<img class=' + className + '" src="' + card.Image + '" alt="' + card.Name + '" style="width: 200px; border-radius: 5%; text-align: center;">'
+                    tempA.innerHTML += tempImg
+                    tempTotal.appendChild(tempA)
+                    tempText = document.createElement("strong")
+                    tempText.style.textAlign = "center"
+                    tempText.className = "base"
                     if (direction == 1) {
-                        text = (camelCase(card.Reversed)).join('<br>')
+                        tempText.innerHTML = (camelCase(card.Reversed)).join('<br>')
                     } else {
-                        text = (camelCase(card.Upright)).join('<br>')
+                        tempText.innerHTML = (camelCase(card.Upright)).join('<br>')
                     }
-                    tempTotal = '<div class="flex2 base" style="animation-name: animate' + (c * 5 + i) + '; animation-duration: 1s; animation-fill-mode: both; animation-timing-function: ease-out; animation-delay: ' + ((c * 5 + i) * 0.5) + 's"><strong class="base" style="font-size: 25px">' + arr[c * 5 + i] + '<br></strong><strong class="base">' + card.Name + '</strong><a target="_blank" href="' + card.Link + '"><img class=' + className + '" src="' + card.Image + '" alt="' + card.Name + '" style="width: 200px; border-radius: 5%;"></img></a><strong class="base" style="text-align: center">' + text + '</strong></div>'
-                    output.innerHTML += tempTotal
+                    tempText.style.align = "center"
+                    tempTotal.appendChild(tempText);
+                    output.appendChild(tempTotal)
                 }
             }
             cards = []
