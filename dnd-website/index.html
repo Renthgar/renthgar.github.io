@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Hexagons</title>
+    <style id="style">
+        .base {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+        }
+
+        .input {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .hex {
+            clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body style="background-color: white">
+    <div id="land" class="base"></div>
+    <div id="influence" class="base"></div>
+    <div id="feature" class="base"></div>
+    <input type="checkbox" id="check" name="check" value="checked">
+    <div id="div" style="position: absolute;display: none">
+        <input type="color" value="#000000" id="colorPicker" />
+        <select id="type" name="type">
+            <option value="land">Land</option>
+            <option value="influence">Influence</option>
+        </select>
+        <select id="subtype" name="type">
+        </select>
+        <input type="text" id="name" placeHolder="name">
+        <input type="button" id="remover" value="Remove" onclick="remove()" />
+        <input type="button" id="saver" value="Save Data" onclick="sendData()" />
+        <input type="number" id="size" min="1" placeHolder="size">
+    </div>
+    <script>
+        resolution = 0.5
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "fileInteractor.php/?get=" + Math.random(), false);
+        xhttp.send();
+        data = JSON.parse(xhttp.responseText)
+        console.log(data)
+        document.getElementById("size").addEventListener("change", sizeChange, false);
+        document.getElementById("colorPicker").addEventListener("change", colorChange, false);
+        document.getElementById("type").addEventListener("change", typeChange, false);
+        document.getElementById("subtype").addEventListener("change", subtypeChange, false);
+        document.getElementById("check").addEventListener("change", show, false);
+        document.getElementById("name").addEventListener("change", nameChange, false);
+        shown = false;
+        function sizeChange() {
+            if (document.getElementById("size").value < 1) {
+                document.getElementById("size").value = 1
+            }
+            data.size = document.getElementById("size").value
+            display("land influence")
+        }
+        document.getElementById("size").value = data.size
+        function remove() {
+            if (document.getElementById("subtype").value == "none") {
+                alert("You Can't Remove This")
+            } else {
+                for (i = 0; i < data.map[document.getElementById("type").value].length; i++) {
+                    for (z = 0; z < data.map[document.getElementById("type").value][i].length; z++) {
+                        if (data.map[document.getElementById("type").value][i][z] == document.getElementById("subtype").value) {
+                            data.map[document.getElementById("type").value][i][z] = data.options[document.getElementById("type").value].default
+                        }
+                    }
+                }
+                delete data.options[document.getElementById("type").value][document.getElementById("subtype").value]
+                typeChange()
+                display("land influence")
+            }
+        }
+        function colorChange() {
+            if (document.getElementById("subtype").value == "none") {
+                document.getElementById("colorPicker").value = data.options[document.getElementById("type").value]["none"].color
+                alert("You Can't Change This Color")
+            } else {
+                data.options[document.getElementById("type").value][document.getElementById("subtype").value].color = document.getElementById("colorPicker").value
+                for (i = 0; i < data.map[document.getElementById("type").value].length; i++) {
+                    for (z = 0; z < data.map[document.getElementById("type").value][i].length; z++) {
+                        if (document.getElementById("subtype").value == document.getElementById(document.getElementById("type").value + '_' + i + '_' + z).name) {
+                            document.getElementById(document.getElementById("type").value + '_' + i + '_' + z).style["background-color"] = document.getElementById("colorPicker").value
+                        }
+                    }
+                }
+            }
+        }
+        function sendData() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "fileInteractor.php", true);
+            xhttp.setRequestHeader('Content-type', 'application/json');
+            xhttp.send(JSON.stringify(data));
+        }
+        function typeChange() {
+            document.getElementById("subtype").innerHTML = "";
+            for (option in data.options[document.getElementById("type").value]) {
+                if (option != "default") {
+                    option2 = document.createElement("option");
+                    option2.value = option;
+                    option2.innerHTML = option;
+                    document.getElementById("subtype").appendChild(option2);
+                }
+            }
+            option2 = document.createElement("option");
+            option2.value = "new";
+            option2.innerHTML = "new";
+            document.getElementById("subtype").appendChild(option2);
+            subtypeChange()
+        }
+        function show() {
+            if (shown) {
+                document.getElementById("div").style.display = "none";
+                shown = false;
+            } else {
+                document.getElementById("div").style.display = "block";
+                shown = true;
+            }
+        }
+        function subtypeChange() {
+            if (document.getElementById("subtype").value == "new") {
+                i = 1
+                while (data.options[document.getElementById("type").value][i]) {
+                    i += 1
+                }
+                data.options[document.getElementById("type").value][i] = {
+                    "color": "#000000"
+                }
+                typeChange()
+                document.getElementById("subtype").value = i
+                subtypeChange()
+            } else {
+                document.getElementById("colorPicker").value = data.options[document.getElementById("type").value][document.getElementById("subtype").value].color;
+                document.getElementById("name").value = document.getElementById("subtype").value
+            }
+        }
+        function nameChange() {
+            if (document.getElementById("name").value == "none") {
+                alert("You Can't Change To This Name")
+                document.getElementById("name").value = document.getElementById("subtype").value
+            } else if (document.getElementById("subtype").value == "none") {
+                document.getElementById("name").value = "none"
+                alert("You Can't Change This Name")
+            } else {
+                for (i = 0; i < data.map[document.getElementById("type").value].length; i++) {
+                    for (z = 0; z < data.map[document.getElementById("type").value][i].length; z++) {
+                        if (data.map[document.getElementById("type").value][i][z] == document.getElementById("subtype").value) {
+                            data.map[document.getElementById("type").value][i][z] = document.getElementById("name").value
+                        }
+                    }
+                }
+                data.options[document.getElementById("type").value][document.getElementById("name").value] = data.options[document.getElementById("type").value][document.getElementById("subtype").value]
+                delete data.options[document.getElementById("type").value][document.getElementById("subtype").value]
+                val = document.getElementById("name").value
+                typeChange()
+                document.getElementById("subtype").value = val
+                subtypeChange()
+            }
+        }
+        typeChange()
+        mode = "land"
+        between = 1.1
+        function hex(name, opacity, id, top, left, sizeMod = 1) {
+            if (data.options[id.split('_')[0]][name].img) {
+                var img = document.createElement("img")
+                img.id = id
+                img.name = name
+                img.className = "hex"
+                img.src = data.options[id.split('_')[0]][name].img
+                img.style = 'opacity: ' + opacity + ';top: ' + Math.round(top) + "px; left: " + Math.round(left) + 'px;'
+                let valWidth = img.width / (0.88 * data.size) * data.options[id.split('_')[0]][name].resolution
+                let valHeight = img.height / data.size * data.options[id.split('_')[0]][name].resolution
+                if (valWidth < valHeight) {
+                    img.height = img.height / valWidth
+                    img.width = img.width / valWidth
+                } else {
+                    img.height = img.height / valHeight
+                    img.width = img.width / valHeight
+                }
+                trueWidth = 88 * data.size / img.width
+                trueHeight = 100 * data.size / img.height
+                img.style.clipPath = "polygon(0% " + trueHeight / 4 + '%, 0% ' + trueHeight / 4 * 3 + '%, ' + trueWidth / 2 + '% ' + trueHeight + '%, ' + trueWidth + '% ' + trueHeight / 4 * 3 + '%, ' + trueWidth + '%' + trueHeight / 4 + '%, ' + trueWidth / 2 + '% 0%)'
+                img.onclick = change;
+                return img
+            } else {
+                var div = document.createElement("div");
+                color = data.options[id.split('_')[0]][name].color
+                div.id = id
+                div.name = name
+                div.className = "hex"
+                div.style = 'opacity: ' + opacity + ';top: ' + Math.round(top) + "px; left: " + Math.round(left) + 'px;height: ' + Math.round(sizeMod * data.size) + 'px ;width: ' + Math.round(0.86 * sizeMod * data.size) + 'px;background-color: ' + color
+                div.onclick = change;
+                return div
+            }
+        }
+        function addFeature(top, left, height, width, id, image) {
+            data.map.features[id] = {
+                "image": image,
+                "offsetx": left - (width / 2),
+                "offsety": top - (height / 2),
+                "height": height,
+                "width": width
+            }
+
+        }
+        function change(e) {
+            id1 = e.srcElement.id.split('_')
+            id1[0] = document.getElementById("type").value
+            id0 = id1.join('_')
+            oldThing = document.getElementById(id0).name
+            if (oldThing == document.getElementById("subtype").value) {
+                newThing = data.options[id1[0]].default
+            } else {
+                newThing = document.getElementById("subtype").value
+            }
+            data.map[document.getElementById("type").value][id1[1]][id1[2]] = newThing
+            if (data.options[id1[0]][oldThing].img && data.options[id1[0]][newThing].img) {
+                document.getElementById(id0).src = data.options[id1[0]][newThing].img
+            } else if (data.options[id1[0]][oldThing].img == undefined && data.options[id1[0]][newThing].img == undefined) {
+                document.getElementById(id0).style["background-color"] = data.options[id1[0]][newThing].color
+            } else {
+                set = [newThing, 1, id0, parseInt(document.getElementById(id0).style.top.replace('px', '')), parseInt(document.getElementById(id0).style.left.replace('px', ''))]
+                document.getElementById(id0).parentNode.removeChild(document.getElementById(id0))
+                document.getElementById(id1[0]).appendChild(hex(set[0], set[1], set[2], set[3], set[4]))
+            }
+            opacity = 1
+            if (newThing == "none") {
+                opacity = 0
+            } else if (id1[0] == "influence") {
+                opacity = 0.3
+            }
+            document.getElementById(id0).name = newThing
+            document.getElementById(id0).style.opacity = opacity
+        }
+        function grid(y, x, color) {
+            temp = []
+            for (i = 0; i < y; i++) {
+                temp.push([])
+                if (i % 2 == 1 && x % 2 == 1) {
+                    temp[i].push(color[Math.floor(Math.random() * color.length)])
+                }
+                for (z = 0; z < Math.floor(x / 2); z++) {
+                    temp[i].push(color[Math.floor(Math.random() * color.length)])
+                }
+            }
+            return temp
+        }
+        function display(layers) {
+            document.getElementById("land").innerHTML = "";
+            document.getElementById("influence").innerHTML = "";
+            document.getElementById("feature").innerHTML = "";
+            if (layers.includes("land")) {
+                for (i = 0; i < data.map.land.length; i++) {
+                    for (z = 0; z < data.map.land[i].length; z++) {
+                        offsetx = 0
+                        if (i % 2 == 0) {
+                            offsetx += data.size * 0.75 * between;
+                        }
+                        document.getElementById("land").appendChild(hex(data.map.land[i][z], 1, 'land_' + i + '_' + z, data.size * 1.5 * between * z + offsetx, data.size * 0.43 * between * i));
+                    }
+                }
+            }
+            if (layers.includes("influence")) {
+                for (i = 0; i < data.map.influence.length; i++) {
+                    for (z = 0; z < data.map.influence[i].length; z++) {
+                        offsetx = 0
+                        if (i % 2 == 0) {
+                            offsetx += data.size * 0.75 * between;
+                        }
+                        opacity = 0.3
+                        if (data.map.influence[i][z] == "none") {
+                            opacity = 0
+                        }
+                        document.getElementById("influence").appendChild(hex(data.map.influence[i][z], opacity, 'influence_' + i + '_' + z, data.size * 1.5 * between * z + offsetx - ((data.size * between - data.size) / 2), data.size * 0.43 * between * i - ((data.size * between - data.size) / 2), between));
+                    }
+                }
+            }
+            if (layers.includes("features")) {
+                for (const feature in data.map.features) {
+                    target = data.map.features[feature]
+                    console.log(target)
+                    var div = document.createElement("img");
+                    div.id = feature
+                    div.src = target.image
+                    div.style = 'position: absolute;top: ' + target.offsety * between * data.size + "px; left: " + target.offsetx * between * data.size + 'px;height: ' + target.height * data.size + 'px;width' + target.width * data.size + 'px'
+                    document.getElementById("feature").appendChild(div)
+                }
+            }
+        }
+        display("land influence")
+    </script>
+</body>
+
+</html>
