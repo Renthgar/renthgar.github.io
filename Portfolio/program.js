@@ -22,7 +22,6 @@ function filter(conditions, search) {
             if (!conditions[key].includes(masterTable[e][key])) { meetsCriteria = false; break }
         }
         if (meetsCriteria) {
-            console.log(masterTable[e]['Name'], search)
             found = masterTable[e]['Name'].toLowerCase().includes(search.toLowerCase())
         }
         if (meetsCriteria && found) r[e] = masterTable[e]
