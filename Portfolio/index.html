@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <script src="program.js"></script>
+    <title>Portfolio</title>
+    <style id="style">
+        .data {
+            font-size: 20px;
+            font-family: 'Times New Roman', Times, serif;
+            margin: 5px;
+            margin-left: 10px;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .container {
+            height: calc(100vh - 10px);
+            width: 15%;
+            background-color: gainsboro;
+            border-style: ridge;
+            border-width: 5px;
+            border-radius: 10px;
+            float: left;
+        }
+
+        .large {
+            display: block;
+            font-size: 25px;
+            text-align: center;
+        }
+
+        .lineSep {
+            border-top: 3px ridge #bbb;
+        }
+
+        .photo {
+            margin-top: 10px;
+            border-radius: 10px;
+            overflow: auto;
+        }
+
+
+        .loader {
+            border: 10px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 10px solid #3498db;
+            width: 100px;
+            height: 100px;
+            animation: spin 1s linear infinite;
+            margin-left: calc((100% - 100px - 20px) / 2);
+            margin-top: 25vh
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body style="margin: 0">
+    <div class="container">
+        <form id="searchForm">
+            <strong class="large">Search</strong>
+            <hr class="lineSep">
+            <input id="Search" type="text" placeholder="Search" class="data"
+                style="text-align: center; border-radius: 10px; width:90%" name="search">
+            <input type="submit" hidden="true">
+            <br><br>
+            <strong class="large">Type</strong>
+            <hr class="lineSep">
+            <input type="radio" id="project" name="type" value="Projects">
+            <label for="project">Project</label><br>
+            <input type="radio" id="impact" name="type" value="Impacts">
+            <label for="impact">Impact</label><br>
+        </form>
+    </div>
+    <div class="container" id="searchContainer" style="overflow: auto; width: calc(85% - 20px)">
+        <strong class="large">List</strong>
+        <hr class="lineSep">
+        <div id="resultsContainer">
+            <div class="loader" id="loader"></div>
+        </div>
+    </div>
+    <div class="container" id="infoContainer" style="width: calc(70% - 30px); overflow: auto; display: None">
+        <div id="photoContainer" style="min-height:50vh;"></div>
+        <hr class="lineSep">
+        <div id="dataContainer" class="data"></div>
+    </div>
+
+
+    <script>
+        const form = document.getElementById('searchForm')
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let search = ''
+            const filtering = { type: ['Projects', 'Impacts'] }
+            const data = new FormData(form);
+            for (const [name, value] of data) {
+                if (name != 'search') {
+                    filtering[name] = [value]
+                } else {
+                    search = value
+                }
+            }
+            const resultsContainer = document.getElementById('resultsContainer')
+            resultsContainer.innerHTML = ''
+            results = filter(filtering, search)
+            for (id in results) {
+                resultsContainer.innerHTML += (`<button onclick="display('${id}')" class="data">${masterTable[id].Name}</button>`)
+            }
+            if (!resultsContainer.innerHTML) resultsContainer.innerHTML = '<strong class="large header" class="data">No Results Found</strong>'
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowRight') {
+                photoIndex = (photoIndex + 1) % photos.length
+                photoContainer.innerHTML = displayPhoto(photoIndex)
+            } else if (e.key === 'ArrowLeft') {
+                photoIndex = (photoIndex - 1 + photos.length) % photos.length
+                photoContainer.innerHTML = displayPhoto(photoIndex)
+            }
+        });
+    </script>
+</body>
+
+</html>
