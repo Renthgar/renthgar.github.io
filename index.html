@@ -15,6 +15,7 @@
     <ul id="links">
     </ul>
     <script>
+        console.log('host: ', window.location)
         links = ['Tarot', 'Portfolio', 'Set']
         for (i = 0; i < links.length; i++) {
             document.getElementById('links').innerHTML += `<li><a href="${links[i]}/index.html"><h1>${links[i]}</h1></iframe></a></li>`
