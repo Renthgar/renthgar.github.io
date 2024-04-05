@@ -4,14 +4,21 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>IDK</title>
-    <style id="style">
+    <style>
+    </style>
+    <style id="customStyle">
+
     </style>
 </head>
 
 <body>
-    <h1>Hello!</h1>
+    <ul id="links">
+    </ul>
     <script>
-        print("hi")
+        links = ['Tarot', 'Portfolio', 'Set']
+        for (i = 0; i < links.length; i++) {
+            document.getElementById('links').innerHTML += `<li><a href="${links[i]}/index.html"><h1>${links[i]}</h1></iframe></a></li>`
+        }
     </script>
 </body>
 

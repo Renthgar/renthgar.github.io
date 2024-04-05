@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Set</title>
+    <script src="code.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background-color: green;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-around;
+            height: 150px;
+        }
+
+        .shape {
+            background-color: black;
+            border-style: solid;
+            border-width: 3px;
+            width: 30px;
+            height: 75px;
+            position: relative;
+            top: 9.5px;
+        }
+
+        .squiggle {
+            border-radius: 10px;
+            clip-path: polygon(0% 0%, 0% 10%, 50% 75%, 0% 60%, 0% 100%, 100% 100%, 100% 75%, 50% 25%, 100% 40%, 100% 0%)
+        }
+
+        .oval {
+            border-radius: 100px;
+        }
+
+        .rhombus {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .card {
+            position: relative;
+            top: 25px;
+            width: 140px;
+            height: 100px;
+            border-radius: 10px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+    <style id="animations">
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <div id="output"></div>
+    <script>
+        start()
+        draw(3)
+    </script>
+</body>
+
+</html>
